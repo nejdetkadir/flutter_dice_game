@@ -1,6 +1,6 @@
 # flutter_dice_game
 
-A new Flutter game for learn flutter and dart language.
+A new Flutter game for learn flutter and dart language. For [javascript](https://github.com/nejdetkadir/dice-game) version.
 
 ## Getting Started
 
