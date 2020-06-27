@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 void main() {
   runApp(MyApp());
@@ -12,7 +13,6 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Flutter Demo',
       theme: ThemeData(
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
@@ -28,20 +28,35 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int currentRound = 0;
+  int currentRoundScore = 0;
   int currentPlayer = 0;
-  List<int> scores = [10,20];
+  List<int> scores = [0,0];
   int dice = 1;
 
   void rollDice() {
     dice = (new Random()).nextInt(6)+1;
+    if (dice != 1) {
+      setState(() {
+        currentRoundScore += dice;
+      });
+    } else {
+      setState(() {
+        currentRoundScore = 0;
+        changePlayer();
+      });
+    }
+  }
+
+  void changePlayer() {
+    currentPlayer == 0 ? currentPlayer = 1 : currentPlayer = 0;
+    currentRoundScore=0;
   }
 
   @override
   Widget build(BuildContext context) {
     var shownWidget = <Widget>[
       Container(
-        margin: EdgeInsets.only(bottom: 70),
+        margin: EdgeInsets.only(bottom: 40),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -57,6 +72,17 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             Icon(
               Icons.arrow_back
+            )
+          ],
+        ),
+      ),
+      Container(
+        margin: EdgeInsets.only(bottom: 30),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+                "CURRENT : ${currentRoundScore}"
             )
           ],
         ),
@@ -85,7 +111,24 @@ class _MyHomePageState extends State<MyHomePage> {
               color: Colors.white,
               onPressed: () {
                 setState(() {
-                  currentPlayer == 0 ? currentPlayer = 1 : currentPlayer = 0;
+                  scores[currentPlayer] += currentRoundScore;
+                  setState(() {
+                    if (scores[currentPlayer] >= 100) {
+                      Fluttertoast.showToast(
+                          msg: "PLAYER ${currentPlayer+1} WINNER AND THE GAME WAS RESTARTED",
+                          toastLength: Toast.LENGTH_SHORT,
+                          gravity: ToastGravity.BOTTOM,
+                          timeInSecForIosWeb: 1,
+                          backgroundColor: Colors.red,
+                          textColor: Colors.white,
+                          fontSize: 15.0
+                      );
+                      currentPlayer = 1;
+                      currentRoundScore = 0;
+                      scores = [0,0];
+                    }
+                  });
+                  changePlayer();
                 });
               },
               child: Text(
@@ -129,7 +172,6 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       )
     ];
-
 
     return Scaffold(
       backgroundColor: Colors.white,
